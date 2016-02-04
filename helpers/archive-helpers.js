@@ -12,7 +12,8 @@ var _ = require('underscore');
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  list: path.join(__dirname, '../archives/sites.txt'),
+  test: path.join(__dirname, '../test/testdata/sites.txt')
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -25,16 +26,36 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(callback){
+  fs.readFile(exports.paths.test, 'utf-8', function(err, urls) {
+    if(err) {
+      console.log(err);
+      throw err;
+    }
+    var urlArray = urls.split('\n');
+    callback(urlArray);
+  });
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(target, callback){
+  exports.readListOfUrls(function (urlArray, target) {
+    if(urlArray.indexOf(target)!== -1) {
+      callback(true);
+    }
+    callback(false);
+  });
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(url, callback){
+  exports.isUrlInList(url, function(bool) {
+    if (!bool) {
+      fs.appendFile(exports.paths.test, url + '\n', callback);
+    }
+  });
 };
 
-exports.isUrlArchived = function(){
+exports.isUrlArchived = function(url, callback){
+  fs.exists(path.join(exports.paths.archivedSites + url), callback);
 };
 
 exports.downloadUrls = function(){
