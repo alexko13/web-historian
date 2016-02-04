@@ -1,6 +1,8 @@
 var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
+var httpRequest = require('http-request');
+
 
 exports.headers = headers = {
   "access-control-allow-origin": "*",
@@ -16,6 +18,31 @@ exports.serveAssets = function(res, asset, callback) {
   // css, or anything that doesn't change often.)
 };
 
+var statusCode;
 
+exports.sendResponse = sendResponse = function (res, data, message) {
+  res.writeHead(statusCode, headers);
+  res.end(archive.paths.list);
+  // res.end(data);
+};
 
-// As you progress, keep thinking about what helper functions you can put here!
+exports.httpMethods = httpMethods = {
+  'GET': function (req, res) {
+    statusCode = 200;
+    //var request = fetch(req.html);
+    sendResponse(res, null, null);
+  },
+  'POST': function (req, res) {
+    statusCode = 201;
+    var data;
+    req.on('data', function (piecesOfData) {
+      data += piecesOfData;
+    });
+    req.on('end', function (data) {
+      sendResponse(req, data);
+    });
+  },
+  'OPTIONS': function (req, res) {
+    statusCode = 200;
+  },
+};
