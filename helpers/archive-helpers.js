@@ -15,7 +15,9 @@ var http = require('http');
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
   list: path.join(__dirname, '../archives/sites.txt'),
-  test: path.join(__dirname, '../test/testdata/sites.txt')
+  test: path.join(__dirname, '../test/testdata/sites.txt'),
+  home: path.join(__dirname, '../web/public/index.html'),
+  loading: path.join(__dirname, '../web/public/index.html')
 };
 
 // Used for stubbing paths for tests, do not modify

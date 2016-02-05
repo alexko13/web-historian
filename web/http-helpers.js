@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
-
+var initialize = require('./initialize');
 
 exports.headers = headers = {
   "access-control-allow-origin": "*",
@@ -11,30 +11,26 @@ exports.headers = headers = {
   'Content-Type': "text/html"
 };
 
-exports.serveAssets = function(res, asset, callback) {
-  // Write some code here that helps serve up your static files!
-  // (Static files are things like html (yours or archived from others...),
-  // css, or anything that doesn't change often.)
-};
-
 var statusCode;
 
-exports.sendResponse = sendResponse = function (res, data) {
+exports.sendResponse = sendResponse = function (res, filename) {
   res.writeHead(statusCode, headers);
-  res.end(data);
+  console.log('Reading file');
+  fs.readFile(filename, {encoding: 'utf-8'}, function(err, doc) {
+    if(err) {
+      console.log(err);
+      throw err;
+    }
+
+    res.end(doc);
+  });
+  console.log('Done reading file');
 };
 
 exports.httpMethods = httpMethods = {
   'GET': function (req, res) {
     statusCode = 200;
-    fs.readFile(archive.paths.siteAssets+'/'+'index.html', 'utf-8', function(err, doc) {
-      if(err) {
-        console.log(err);
-        throw err;
-      }
-      console.log('Serving index.html')
-      sendResponse(res, doc);
-    });
+    sendResponse(res, archive.paths.home);
   },
   'POST': function (req, res) {
     statusCode = 302;
@@ -44,45 +40,31 @@ exports.httpMethods = httpMethods = {
       data += piecesOfData.toString();
     });
     req.on('end', function () {
-      //getting url/data
-      //checking if website is archived
-      //else serve archived website
-      console.log('parsing', data);
-
-      var desiredUrl = data.substr(4).trim();
-      console.log('POST  FOR:' + desiredUrl);
+      //parse urls correctly
+      var parsedData = JSON.parse(data);
+      var desiredUrl = desiredUrl.substr(4) || parsedData.url;
+      
       archive.isUrlArchived(desiredUrl, function(found) {
+
         console.log('found', found);
+        
         if(found) {
-          fs.readFile(archive.paths.archivedSites+'/'+desiredUrl, 'utf-8', function(err, doc) {
-            if(err) {
-              console.log(err);
-              throw err;
-            }
-            sendResponse(res, doc);
-          });
+          sendResponse(res, archive.paths.archivedSites + '/' + desiredUrl);
         } else {
           archive.addUrlToList(desiredUrl, function(err) {
             if(err) {
               console.log('error saving page' , err);
             }
             // Can we listen for the file loading and serve it then?
-            
           });
-          // Display loading page
-          fs.readFile(archive.paths.siteAssets + '/' + 'loading.html', 'utf-8', function(err, doc) {
-            if (err) {
-              console.log(err);
-              throw err;
-            }
-            sendResponse(res, doc);
-          });
+          // statusCode = 404;
+          sendResponse(res, archive.paths.loading);
         }
       });
     });
   },
   'OPTIONS': function (req, res) {
     statusCode = 200;
-    sendResponse(res, null);
+    sendResponse(res, archive.paths.home);
   },
 };

@@ -12,7 +12,8 @@ initialize();
 var port = 8080;
 var server = http.createServer(function (req, res) {
   var urlParts = url.parse(req.url);
-  //console.log(urlParts);
+  
+  console.log('Handling request method ' + req.method);
 
   if(urlParts.pathname === '/') {
     handler.handleRequest(req, res);
