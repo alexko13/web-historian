@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var httpReq = require('http-request');
 var request = require('request');
 var http = require('http');
 
@@ -58,7 +57,7 @@ exports.addUrlToList = function(url, callback){
 };
 
 exports.isUrlArchived = function(url, callback){
-  fs.exists(path.join(exports.paths.archivedSites + url), callback);
+  fs.exists(path.join(exports.paths.archivedSites + '/' + url), callback);
 };
 
 exports.downloadUrls = function(urlArray){

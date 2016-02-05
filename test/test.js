@@ -23,7 +23,7 @@ describe("server", function() {
 
   describe("archived websites", function () {
     describe("GET", function () {
-      xit("should return the content of a website from the archive", function (done) {
+      it("should return the content of a website from the archive", function (done) {
         var fixtureName = "www.google.com";
         var fixturePath = archive.paths.archivedSites + "/" + fixtureName;
 
@@ -119,7 +119,7 @@ describe("archive helpers", function(){
   });
 
   describe("#isUrlArchived", function () {
-    xit("should check if a url is archived", function (done) {
+    it("should check if a url is archived", function (done) {
       fs.writeFileSync(archive.paths.archivedSites + "/www.example.com", "blah blah");
 
       var counter = 0;
