@@ -33,16 +33,17 @@ exports.httpMethods = httpMethods = {
     sendResponse(res, null, null);
   },
   'POST': function (req, res) {
-    statusCode = 201;
+    statusCode = 302;
     var data;
     req.on('data', function (piecesOfData) {
       data += piecesOfData;
     });
     req.on('end', function (data) {
-      sendResponse(req, data);
+      sendResponse(res, null, null);
     });
   },
   'OPTIONS': function (req, res) {
     statusCode = 200;
+    sendResponse(res, null, null);
   },
 };
